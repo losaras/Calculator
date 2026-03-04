@@ -25,7 +25,7 @@ public class Main {
         int k = 0;
         try (FileInputStream fis = new FileInputStream(file)) {
             a = fis.read();
-            while (a != -1) {
+             while (a != -1) {
                 if (a == ' ') {
                     if (k == 0) {
                         num1.add(stringBuffer.toString());
@@ -36,8 +36,10 @@ public class Main {
                         stringBuffer.setLength(0);
                         k++;
                     }
-                } else if (a == '\n') {
-                    num2.add(stringBuffer.toString());
+                }else if (a == '\n') {
+                    if (!stringBuffer.toString().equals("\n") && !stringBuffer.toString().equals("")) {
+                        num2.add(stringBuffer.toString());
+                    }
                     stringBuffer.setLength(0);
                     k = 0;
                 } else {
