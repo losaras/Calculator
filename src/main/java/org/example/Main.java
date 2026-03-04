@@ -17,7 +17,7 @@ public class Main {
         }
         String filenumber = "";
         String num1 = "", oper = "", num2 = "";
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         int k = 0;
         try (FileInputStream fis = new FileInputStream(file)){
             int a = fis.read();
@@ -57,9 +57,11 @@ public class Main {
 //        oper = sc.next();
 //        num2 = sc.next();
         String str = "";
+        double numb1 = 0;
+        double numb2 = 0;
         try {
-            double numb1 = Double.parseDouble(num1);
-            double numb2 = Double.parseDouble(num2);
+            numb1 = Double.parseDouble(num1);
+            numb2 = Double.parseDouble(num2);
             double res = 0;
             switch (oper) {
                 case "*" -> res = numb1 * numb2;
@@ -74,12 +76,19 @@ public class Main {
         }catch (Exception e ){
             str = e.getMessage();
         }
-        System.out.println(str.equals("Infinity") ? "Error! Division by zero" : str);
-//        try (FileOutputStream fos = new FileOutputStream(file)) {
-//            fos.write(str.getBytes());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        //System.out.println(str.equals("Infinity") ? "Error! Division by zero" : str);
+        str = str.equals("Infinity") ? "Error! Division by zero" : str;
+        String answer = "";
+        if(Character.isDigit(str.charAt(0))) {
+             answer = numb1 + " " + oper + " " + numb2 + " = " + str;
+        }else {
+            answer = str;
+        }
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(answer.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }
