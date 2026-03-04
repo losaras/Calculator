@@ -4,53 +4,55 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
         File file = new File("Input.txt");
-
         try {
             file.createNewFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String filenumber = "";
-        String num1 = "", oper = "", num2 = "";
+        //String num1 = "", oper = "", num2 = "";
+        ArrayList<String> num1 = new ArrayList<>();
+        ArrayList<String> oper = new ArrayList<>();
+        ArrayList<String> num2 = new ArrayList<>();
         StringBuilder stringBuffer = new StringBuilder();
+        int a = 0;
+        String answer = "";
+        StringBuilder result = new StringBuilder();
         int k = 0;
-        try (FileInputStream fis = new FileInputStream(file)){
-            int a = fis.read();
-            while (a != -1){
-                if (a == ' '){
-                    if(k == 0) {
-                        num1 = stringBuffer.toString();
+        try (FileInputStream fis = new FileInputStream(file)) {
+            a = fis.read();
+            while (a != -1) {
+                if (a == ' ') {
+                    if (k == 0) {
+                        num1.add(stringBuffer.toString());
                         stringBuffer.setLength(0);
                         k++;
-                    }else if(k == 1){
-                        oper = stringBuffer.toString();
+                    } else if (k == 1) {
+                        oper.add(stringBuffer.toString());
                         stringBuffer.setLength(0);
                         k++;
                     }
-                }else{
+                } else if (a == '\n') {
+                    num2.add(stringBuffer.toString());
+                    stringBuffer.setLength(0);
+                    k = 0;
+                } else {
                     stringBuffer.append((char) a);
                 }
-//                else {
-//                    stringBuffer.append((char) a);
-//                    num2 = stringBuffer.toString();
-//                    stringBuffer.setLength(0);
-//                    k++;
-//                }
                 a = fis.read();
             }
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            num2 = stringBuffer.toString();
+        } finally {
+            if (!stringBuffer.toString().equals("")) {
+                num2.add(stringBuffer.toString());
+            }
             stringBuffer.setLength(0);
         }
-        System.out.println(filenumber);
 //        Scanner sc = new Scanner(System.in);
 //        System.out.println("Введите пример формата (Число пробел операция пробел число)");
 //        num1 = sc.next();
@@ -59,36 +61,42 @@ public class Main {
         String str = "";
         double numb1 = 0;
         double numb2 = 0;
-        try {
-            numb1 = Double.parseDouble(num1);
-            numb2 = Double.parseDouble(num2);
-            double res = 0;
-            switch (oper) {
-                case "*" -> res = numb1 * numb2;
-                case "+" -> res = numb1 + numb2;
-                case "-" -> res = numb1 - numb2;
-                case "/" -> res = numb1 / numb2;
-                default -> throw new Exception("Operation Error!");
+        boolean flag = true;
+        for (int i = 0; i < num2.size(); i++) {
+            try {
+                numb1 = Double.parseDouble(num1.get(i));
+                numb2 = Double.parseDouble(num2.get(i));
+                double res = 0;
+                switch (oper.get(i)) {
+                    case "*" -> res = numb1 * numb2;
+                    case "+" -> res = numb1 + numb2;
+                    case "-" -> res = numb1 - numb2;
+                    case "/" -> res = numb1 / numb2;
+                    default -> throw new Exception("Operation Error!");
+                }
+                str = Double.toString(res);
+            } catch (NumberFormatException e) {
+                str = "Error! Not number";
+            } catch (Exception e) {
+                str = e.getMessage();
+                flag = false;
             }
-            str = Double.toString(res);
-        }catch (NumberFormatException e){
-            str = "Error! Not number";
-        }catch (Exception e ){
-            str = e.getMessage();
+            //System.out.println(str.equals("Infinity") ? "Error! Division by zero" : str);
+            str = str.equals("Infinity") ? "Error! Division by zero" : str;
+            if (flag && oper.size() != 0) {
+                answer = numb1 + " " + oper.get(i) + " " + numb2 + " = " + str;
+            }else {
+                answer = str;
+            }
+
+            result.append(answer + '\n');
         }
-        //System.out.println(str.equals("Infinity") ? "Error! Division by zero" : str);
-        str = str.equals("Infinity") ? "Error! Division by zero" : str;
-        String answer = "";
-        if(Character.isDigit(str.charAt(0))) {
-             answer = numb1 + " " + oper + " " + numb2 + " = " + str;
-        }else {
-            answer = str;
-        }
+        answer = result.toString();
+
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(answer.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
